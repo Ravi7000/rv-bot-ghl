@@ -35,7 +35,21 @@ app.use('/api/', limiter);
 
 // Health check
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    hasDatabase: !!process.env.DATABASE_URL,
+    hasJWT: !!process.env.JWT_SECRET
+  });
+});
+
+// Simple test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({ 
+    message: 'Backend is working!',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Routes
