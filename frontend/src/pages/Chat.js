@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
@@ -7,14 +7,25 @@ function Chat() {
   const [currentSession, setCurrentSession] = useState(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [loading, setLoading] = useState(false);
   const [streaming, setStreaming] = useState(false);
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
+  const loadSessions = useCallback(async () => {
+    try {
+      const response = await api.get('/chat/sessions');
+      setSessions(response.data);
+      if (response.data.length > 0 && !currentSession) {
+        loadSession(response.data[0].sessionId);
+      }
+    } catch (error) {
+      console.error('Failed to load sessions:', error);
+    }
+  }, [currentSession]);
+
   useEffect(() => {
     loadSessions();
-  }, []);
+  }, [loadSessions]);
 
   useEffect(() => {
     scrollToBottom();
@@ -36,7 +47,7 @@ function Chat() {
     }
   };
 
-  const loadSession = async (sessionId) => {
+  const loadSession = useCallback(async (sessionId) => {
     try {
       const response = await api.get(`/chat/sessions/${sessionId}`);
       setCurrentSession(sessionId);
@@ -44,7 +55,7 @@ function Chat() {
     } catch (error) {
       console.error('Failed to load session:', error);
     }
-  };
+  }, []);
 
   const createNewSession = async () => {
     try {
@@ -59,7 +70,7 @@ function Chat() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!input.trim() || loading || streaming) return;
+    if (!input.trim() || streaming) return;
 
     const userMessage = input.trim();
     setInput('');
@@ -133,6 +144,7 @@ function Chat() {
               const parsed = JSON.parse(data);
               if (parsed.chunk) {
                 assistantMessage += parsed.chunk;
+                // Use functional update to avoid closure issues
                 setMessages(prev => {
                   const updated = [...prev];
                   updated[updated.length - 1] = {
@@ -229,7 +241,7 @@ function Chat() {
             <button
               type="submit"
               className="send-btn"
-              disabled={!input.trim() || loading || streaming}
+              disabled={!input.trim() || streaming}
             >
               {streaming ? 'Sending...' : 'Send'}
             </button>
