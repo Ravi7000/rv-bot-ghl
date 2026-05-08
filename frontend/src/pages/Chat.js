@@ -11,40 +11,8 @@ function Chat() {
   const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
-  const loadSessions = useCallback(async () => {
-    try {
-      const response = await api.get('/chat/sessions');
-      setSessions(response.data);
-      if (response.data.length > 0 && !currentSession) {
-        loadSession(response.data[0].sessionId);
-      }
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
-    }
-  }, [currentSession]);
-
-  useEffect(() => {
-    loadSessions();
-  }, [loadSessions]);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const loadSessions = async () => {
-    try {
-      const response = await api.get('/chat/sessions');
-      setSessions(response.data);
-      if (response.data.length > 0 && !currentSession) {
-        loadSession(response.data[0].sessionId);
-      }
-    } catch (error) {
-      console.error('Failed to load sessions:', error);
-    }
   };
 
   const loadSession = useCallback(async (sessionId) => {
@@ -56,6 +24,26 @@ function Chat() {
       console.error('Failed to load session:', error);
     }
   }, []);
+
+  const loadSessions = useCallback(async () => {
+    try {
+      const response = await api.get('/chat/sessions');
+      setSessions(response.data);
+      if (response.data.length > 0 && !currentSession) {
+        loadSession(response.data[0].sessionId);
+      }
+    } catch (error) {
+      console.error('Failed to load sessions:', error);
+    }
+  }, [currentSession, loadSession]);
+
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const createNewSession = async () => {
     try {
