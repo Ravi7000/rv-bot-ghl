@@ -41,6 +41,44 @@ app.post('/api/auth/test', (req, res) => {
   });
 });
 
+// Mock register endpoint (for testing frontend)
+app.post('/api/auth/register', (req, res) => {
+  const { email, password, name } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password required' });
+  }
+  
+  // Mock successful registration
+  res.json({
+    token: 'mock-jwt-token-' + Date.now(),
+    user: {
+      id: 1,
+      email: email,
+      name: name || 'Test User'
+    }
+  });
+});
+
+// Mock login endpoint (for testing frontend)
+app.post('/api/auth/login', (req, res) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ error: 'Email and password required' });
+  }
+  
+  // Mock successful login
+  res.json({
+    token: 'mock-jwt-token-' + Date.now(),
+    user: {
+      id: 1,
+      email: email,
+      name: 'Test User'
+    }
+  });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 
