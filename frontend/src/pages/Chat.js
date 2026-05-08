@@ -63,11 +63,9 @@ function Chat() {
     const userMessage = input.trim();
     setInput('');
 
-    // Add user message to UI
     const newMessages = [...messages, { role: 'user', content: userMessage }];
     setMessages(newMessages);
 
-    // Create session if needed
     let sessionId = currentSession;
     if (!sessionId) {
       try {
@@ -81,12 +79,9 @@ function Chat() {
     }
 
     setStreaming(true);
-
-    // Prepare history
     const history = messages.map(m => ({ role: m.role, content: m.content }));
 
     try {
-      // Use EventSource for streaming
       const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
       const token = localStorage.getItem('token');
       
@@ -108,7 +103,6 @@ function Chat() {
       const decoder = new TextDecoder();
       let assistantMessage = '';
 
-      // Add empty assistant message
       setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
       while (true) {
@@ -124,7 +118,7 @@ function Chat() {
             
             if (data === '[DONE]') {
               setStreaming(false);
-              loadSessions(); // Refresh sessions
+              loadSessions();
               break;
             }
 
@@ -132,7 +126,6 @@ function Chat() {
               const parsed = JSON.parse(data);
               if (parsed.chunk) {
                 assistantMessage += parsed.chunk;
-                // Use functional update to avoid closure issues
                 setMessages(prev => {
                   const updated = [...prev];
                   updated[updated.length - 1] = {
