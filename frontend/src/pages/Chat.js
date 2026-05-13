@@ -23,6 +23,16 @@ function isIOS() {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
+/** Logo: `REACT_APP_LOGO_URL` if set, else `public/logo.png` (works on Vercel at /logo.png) */
+function getLogoUrl() {
+  if (process.env.REACT_APP_LOGO_URL) {
+    return process.env.REACT_APP_LOGO_URL;
+  }
+  const base = process.env.PUBLIC_URL || '';
+  if (!base) return '/logo.png';
+  return base.endsWith('/') ? `${base}logo.png` : `${base}/logo.png`;
+}
+
 export default function Chat() {
   const navigate = useNavigate();
   const threadRef = useRef(null);
@@ -40,7 +50,7 @@ export default function Chat() {
   const [techModalOpen, setTechModalOpen] = useState(false);
   const [typing, setTyping] = useState(false);
 
-  const logoUrl = process.env.REACT_APP_LOGO_URL || '';
+  const logoUrl = getLogoUrl();
   const supportEmail = process.env.REACT_APP_SUPPORT_EMAIL || 'support@example.com';
 
   useEffect(() => {
@@ -276,7 +286,7 @@ export default function Chat() {
       <div className={`rvbot-left ${sidebarCollapsed ? 'collapsed' : ''} ${mobileOpen ? 'open' : ''}`}>
         <div className="rvbot-left-header">
           <div className="rvbot-left-logo">
-            {logoUrl ? <img id="rvbot-left-logo" alt="Logo" src={logoUrl} /> : null}
+            <img id="rvbot-left-logo" alt="Logo" src={logoUrl} />
           </div>
           <div className="rvbot-left-actions">
             <button
@@ -424,7 +434,7 @@ export default function Chat() {
             ☰
           </button>
           <div className="title">
-            {logoUrl ? <img id="rvbot-logo" alt="RV Assistant" src={logoUrl} /> : <span>RV Journey Genie</span>}
+            <img id="rvbot-logo" alt="RV Journey Genie" src={logoUrl} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button type="button" className="rvbot-new-chat-btn" id="new-chat-btn" aria-label="New chat" onClick={createNewSession}>
@@ -475,7 +485,7 @@ export default function Chat() {
                 <div className="rvbot-avatar-container">
                   <div className="rvbot-genie-banner">Journey Genie</div>
                   <div className="rvbot-avatar">
-                    {logoUrl ? <img id="rvbot-welcome-logo" alt="Journey Genie" src={logoUrl} /> : null}
+                    <img id="rvbot-welcome-logo" alt="Journey Genie" src={logoUrl} />
                   </div>
                 </div>
                 <h1 className="rvbot-welcome-title">Rv Journey Genie</h1>
