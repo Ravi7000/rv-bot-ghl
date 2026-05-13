@@ -198,6 +198,47 @@ export default function Chat() {
       const decoder = new TextDecoder();
       setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
 
+      const handleStreamData = (raw) => {
+        if (raw === '[DONE]') {
+          setTyping(false);
+          return 'break-inner';
+        }
+        try {
+          const parsed = JSON.parse(raw);
+          if (parsed.error) {
+            const errMsg = parsed.message || parsed.error || 'Error';
+            setTyping(false);
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = next[next.length - 1];
+              if (last && last.role === 'assistant') {
+                next[next.length - 1] = { role: 'assistant', content: errMsg };
+              }
+              return next;
+            });
+            return null;
+          }
+          if (parsed.chunk) {
+            const chunkText = parsed.chunk;
+            setTyping(false);
+            setMessages((prev) => {
+              const next = [...prev];
+              const last = next[next.length - 1];
+              if (last && last.role === 'assistant') {
+                next[next.length - 1] = {
+                  role: 'assistant',
+                  content: (last.content || '') + chunkText
+                };
+              }
+              return next;
+            });
+          }
+        } catch {
+          /* ignore */
+        }
+        return null;
+      };
+
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -206,40 +247,8 @@ export default function Chat() {
         for (const line of lines) {
           if (!line.startsWith('data: ')) continue;
           const data = line.slice(6);
-          if (data === '[DONE]') {
-            setTyping(false);
-            break;
-          }
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed.error) {
-              const errMsg = parsed.message || parsed.error || 'Error';
-              setTyping(false);
-              setMessages((prev) => {
-                const next = [...prev];
-                const last = next[next.length - 1];
-                if (last && last.role === 'assistant') {
-                  next[next.length - 1] = { role: 'assistant', content: errMsg };
-                }
-                return next;
-              });
-            } else if (parsed.chunk) {
-              setTyping(false);
-              setMessages((prev) => {
-                const next = [...prev];
-                const last = next[next.length - 1];
-                if (last && last.role === 'assistant') {
-                  next[next.length - 1] = {
-                    role: 'assistant',
-                    content: (last.content || '') + parsed.chunk
-                  };
-                }
-                return next;
-              });
-            }
-          } catch {
-            /* ignore */
-          }
+          const signal = handleStreamData(data);
+          if (signal === 'break-inner') break;
         }
       }
       await loadSessions();
