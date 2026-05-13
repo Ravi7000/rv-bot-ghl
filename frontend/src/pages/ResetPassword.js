@@ -36,40 +36,50 @@ function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="auth-container">
-        <div className="auth-box">
-          <h1>Invalid Link</h1>
-          <p>This password reset link is invalid or has expired.</p>
+      <div className="rvbot-auth-page">
+        <div className="rvbot-modal-content small">
+          <div className="rvbot-modal-header">
+            <h2>Invalid Link</h2>
+            <p>This password reset link is invalid or has expired.</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <h1>Set Your Password</h1>
-        <p>Choose a strong password for your account</p>
+    <div className="rvbot-auth-page">
+      <div className="rvbot-modal-content small">
+        <div className="rvbot-modal-header">
+          <h2>Set Your Password</h2>
+          <p>Choose a strong password for your account</p>
+        </div>
 
-        {error && <div className="error-message">{error}</div>}
-        {success && <div className="success-message">Password set successfully! Redirecting...</div>}
+        {error ? <div className="rvbot-auth-error">{error}</div> : null}
+        {success ? (
+          <div className="rvbot-auth-error" style={{ background: '#d1fae5', borderColor: '#a7f3d0', color: '#065f46' }}>
+            Password set successfully! Redirecting...
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>New Password</label>
+          <div className="rvbot-auth-row">
             <input
               type="password"
+              className="rvbot-input-field"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="••••••••"
-              minLength="8"
+              placeholder="New password"
+              minLength={8}
+              autoComplete="new-password"
             />
           </div>
-
-          <button type="submit" className="btn btn-primary" disabled={loading || success}>
-            {loading ? 'Setting password...' : 'Set Password'}
-          </button>
+          <div className="rvbot-auth-row">
+            <button type="submit" className="rvbot-btn" style={{ width: '100%' }} disabled={loading || success}>
+              {loading ? 'Setting password...' : 'Set Password'}
+            </button>
+          </div>
         </form>
       </div>
     </div>

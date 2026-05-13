@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Chat from './pages/Chat';
 import ResetPassword from './pages/ResetPassword';
+import './rvbot-app.css';
 import './App.css';
 
 function App() {
@@ -22,13 +23,13 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route 
-            path="/chat" 
+          <Route
+            path="/chat"
             element={
               <PrivateRoute>
                 <Chat />
               </PrivateRoute>
-            } 
+            }
           />
           <Route path="/" element={<Navigate to="/chat" />} />
         </Routes>

@@ -79,6 +79,66 @@ app.post('/api/auth/login', (req, res) => {
   });
 });
 
+// Mock chat endpoints
+app.get('/api/chat/sessions', (req, res) => {
+  // Mock chat sessions
+  res.json([
+    {
+      sessionId: 'session-1',
+      title: 'RV Maintenance Help',
+      updatedAt: new Date().toISOString()
+    },
+    {
+      sessionId: 'session-2', 
+      title: 'Engine Troubleshooting',
+      updatedAt: new Date(Date.now() - 86400000).toISOString()
+    }
+  ]);
+});
+
+app.get('/api/chat/sessions/:sessionId', (req, res) => {
+  // Mock chat messages
+  res.json({
+    messages: [
+      {
+        role: 'user',
+        content: 'Hello, I need help with my RV engine'
+      },
+      {
+        role: 'assistant', 
+        content: 'Hi! I\'d be happy to help you with your RV engine. What specific issue are you experiencing?'
+      }
+    ]
+  });
+});
+
+app.post('/api/chat/sessions', (req, res) => {
+  // Create new session
+  res.json({
+    sessionId: 'session-' + Date.now()
+  });
+});
+
+app.post('/api/chat', (req, res) => {
+  const { message, sessionId } = req.body;
+  
+  // Mock AI response
+  const responses = [
+    "That's a great question about RV maintenance! Let me help you with that.",
+    "Based on your description, it sounds like a common RV issue. Here's what I recommend...",
+    "For RV engine problems, the first thing to check is usually the fuel system.",
+    "RV electrical issues can be tricky, but let's troubleshoot step by step.",
+    "Regular maintenance is key for RV longevity. Here are some tips..."
+  ];
+  
+  const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+  
+  res.json({
+    message: randomResponse,
+    sessionId: sessionId
+  });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ 

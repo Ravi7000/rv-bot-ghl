@@ -33,54 +33,57 @@ function Register() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-box">
-        <h1>Create Account</h1>
-        <p>Sign up to start using RV Journey Genie</p>
+    <div className="rvbot-auth-page">
+      <div className="rvbot-modal-content small">
+        <div className="rvbot-modal-header">
+          <h2>Create Account</h2>
+          <p>Sign up to start using RV Journey Genie</p>
+        </div>
 
-        {error && <div className="error-message">{error}</div>}
+        {error ? <div className="rvbot-auth-error">{error}</div> : null}
 
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Name</label>
+          <div className="rvbot-auth-row">
             <input
               type="text"
+              className="rvbot-input-field"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
-              placeholder="John Doe"
+              placeholder="Full name"
+              autoComplete="name"
             />
           </div>
-
-          <div className="form-group">
-            <label>Email</label>
+          <div className="rvbot-auth-row">
             <input
               type="email"
+              className="rvbot-input-field"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="your@email.com"
+              placeholder="Email"
+              autoComplete="email"
             />
           </div>
-
-          <div className="form-group">
-            <label>Password</label>
+          <div className="rvbot-auth-row">
             <input
               type="password"
+              className="rvbot-input-field"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="••••••••"
-              minLength="8"
+              placeholder="Password"
+              minLength={8}
+              autoComplete="new-password"
             />
           </div>
-
-          <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Creating account...' : 'Sign Up'}
-          </button>
+          <div className="rvbot-auth-row">
+            <button type="submit" className="rvbot-btn" style={{ width: '100%' }} disabled={loading}>
+              {loading ? 'Creating account...' : 'Sign Up'}
+            </button>
+          </div>
         </form>
 
-        <div className="auth-link">
+        <div className="rvbot-auth-toggle">
           Already have an account? <Link to="/login">Log in</Link>
         </div>
       </div>
