@@ -23,14 +23,27 @@ function isIOS() {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
-/** Logo: `REACT_APP_LOGO_URL` if set, else `public/logo.png` (works on Vercel at /logo.png) */
+/** Logo: `REACT_APP_LOGO_URL` if set, else bundled `public/logo.svg` (commit this file; `/logo.png` only works if you add `public/logo.png`) */
 function getLogoUrl() {
   if (process.env.REACT_APP_LOGO_URL) {
     return process.env.REACT_APP_LOGO_URL;
   }
   const base = process.env.PUBLIC_URL || '';
-  if (!base) return '/logo.png';
-  return base.endsWith('/') ? `${base}logo.png` : `${base}/logo.png`;
+  const file = 'logo.svg';
+  if (!base) return `/${file}`;
+  return base.endsWith('/') ? `${base}${file}` : `${base}/${file}`;
+}
+
+function fallbackLogoSrc() {
+  const base = process.env.PUBLIC_URL || '';
+  if (!base) return '/logo.svg';
+  return base.endsWith('/') ? `${base}logo.svg` : `${base}/logo.svg`;
+}
+
+function onLogoImgError(e) {
+  const fb = fallbackLogoSrc();
+  if (e.currentTarget.src.endsWith('/logo.svg') || e.currentTarget.src === fb) return;
+  e.currentTarget.src = fb;
 }
 
 export default function Chat() {
@@ -286,7 +299,7 @@ export default function Chat() {
       <div className={`rvbot-left ${sidebarCollapsed ? 'collapsed' : ''} ${mobileOpen ? 'open' : ''}`}>
         <div className="rvbot-left-header">
           <div className="rvbot-left-logo">
-            <img id="rvbot-left-logo" alt="Logo" src={logoUrl} />
+            <img id="rvbot-left-logo" alt="Logo" src={logoUrl} onError={onLogoImgError} />
           </div>
           <div className="rvbot-left-actions">
             <button
@@ -434,7 +447,7 @@ export default function Chat() {
             ☰
           </button>
           <div className="title">
-            <img id="rvbot-logo" alt="RV Journey Genie" src={logoUrl} />
+            <img id="rvbot-logo" alt="RV Journey Genie" src={logoUrl} onError={onLogoImgError} />
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <button type="button" className="rvbot-new-chat-btn" id="new-chat-btn" aria-label="New chat" onClick={createNewSession}>
@@ -485,7 +498,7 @@ export default function Chat() {
                 <div className="rvbot-avatar-container">
                   <div className="rvbot-genie-banner">Journey Genie</div>
                   <div className="rvbot-avatar">
-                    <img id="rvbot-welcome-logo" alt="Journey Genie" src={logoUrl} />
+                    <img id="rvbot-welcome-logo" alt="Journey Genie" src={logoUrl} onError={onLogoImgError} />
                   </div>
                 </div>
                 <h1 className="rvbot-welcome-title">Rv Journey Genie</h1>
