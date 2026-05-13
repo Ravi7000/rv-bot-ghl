@@ -196,7 +196,6 @@ export default function Chat() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let assistantText = '';
       setMessages((prev) => [...prev, { role: 'assistant', content: '' }]);
 
       while (true) {
@@ -214,20 +213,30 @@ export default function Chat() {
           try {
             const parsed = JSON.parse(data);
             if (parsed.error) {
-              assistantText = parsed.message || parsed.error || 'Error';
+              const errMsg = parsed.message || parsed.error || 'Error';
               setTyping(false);
+              setMessages((prev) => {
+                const next = [...prev];
+                const last = next[next.length - 1];
+                if (last && last.role === 'assistant') {
+                  next[next.length - 1] = { role: 'assistant', content: errMsg };
+                }
+                return next;
+              });
             } else if (parsed.chunk) {
               setTyping(false);
-              assistantText += parsed.chunk;
+              setMessages((prev) => {
+                const next = [...prev];
+                const last = next[next.length - 1];
+                if (last && last.role === 'assistant') {
+                  next[next.length - 1] = {
+                    role: 'assistant',
+                    content: (last.content || '') + parsed.chunk
+                  };
+                }
+                return next;
+              });
             }
-            setMessages((prev) => {
-              const next = [...prev];
-              const last = next[next.length - 1];
-              if (last && last.role === 'assistant') {
-                next[next.length - 1] = { role: 'assistant', content: assistantText };
-              }
-              return next;
-            });
           } catch {
             /* ignore */
           }
