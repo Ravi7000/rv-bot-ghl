@@ -11,7 +11,7 @@ const SUGGESTED_SIDEBAR = [
   "Generator won't start—steps to diagnose?",
   'Recommended maintenance routine?'
 ];
-
+ 
 const WELCOME_SUGGESTIONS = [
   { q: 'why did my fridge stop working ?' },
   { q: 'why wont my awning open?' },
