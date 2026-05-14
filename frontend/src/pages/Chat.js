@@ -11,7 +11,7 @@ const SUGGESTED_SIDEBAR = [
   "Generator won't start—steps to diagnose?",
   'Recommended maintenance routine?'
 ];
- 
+
 const WELCOME_SUGGESTIONS = [
   { q: 'why did my fridge stop working ?' },
   { q: 'why wont my awning open?' },
@@ -23,13 +23,13 @@ function isIOS() {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 }
 
-/** Logo: `REACT_APP_LOGO_URL` if set, else bundled `public/logo.svg` (commit this file; `/logo.png` only works if you add `public/logo.png`) */
+/** Logo: `REACT_APP_LOGO_URL` if set, else `public/logo.png`. Add `frontend/public/logo.png` to git. If PNG 404/missing, `onError` falls back to `logo.svg`. */
 function getLogoUrl() {
   if (process.env.REACT_APP_LOGO_URL) {
     return process.env.REACT_APP_LOGO_URL;
   }
   const base = process.env.PUBLIC_URL || '';
-  const file = 'logo.svg';
+  const file = 'logo.png';
   if (!base) return `/${file}`;
   return base.endsWith('/') ? `${base}${file}` : `${base}/${file}`;
 }
@@ -42,7 +42,8 @@ function fallbackLogoSrc() {
 
 function onLogoImgError(e) {
   const fb = fallbackLogoSrc();
-  if (e.currentTarget.src.endsWith('/logo.svg') || e.currentTarget.src === fb) return;
+  const src = e.currentTarget.src || '';
+  if (src.includes('logo.svg') || src === fb) return;
   e.currentTarget.src = fb;
 }
 
